@@ -1,0 +1,478 @@
+Building configuration...
+
+Current configuration : 10138 bytes
+!
+! Last configuration change at 14:54:26 EST Thu Oct 1 2020 by admin
+! NVRAM config last updated at 14:54:39 EST Thu Oct 1 2020 by admin
+!
+version 15.2
+no service pad
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname sw-2960lsm-1
+!
+boot-start-marker
+boot-end-marker
+!
+logging count
+logging persistent
+enable secret 5 $1$0/WE$4/a/W23TqMWZbGeQCzNIT0
+!
+username smartm privilege 15 secret 9 $9$3FIH2VQI2kwF2k$KUG8g5CBnTbomX4VBiRpWkzFLpzTJ3h4.bRlsLO.xWQ
+username admin privilege 15 secret 9 $9$3VUJ3VEH3lAE4.$xdzSQsb7U9yJhH34jUfz5JPyBhjZQw/3akbgtCnlp62
+aaa new-model
+!
+!
+aaa authentication dot1x default group radius
+aaa authorization network default group radius 
+!
+!
+!
+!
+!
+aaa server radius dynamic-author
+ client 10.1.100.21 server-key ISEc0ld
+!
+aaa session-id common
+clock timezone EST -5 0
+clock summer-time EST recurring
+system mtu routing 1500
+ip dhcp smart-relay
+ip dhcp excluded-address 10.1.1.1 10.1.1.2
+ip dhcp excluded-address 10.1.101.1 10.1.101.50
+!
+!
+ip dhcp snooping vlan 20,50,70,198-199
+ip igmp snooping vlan 99 last-member-query-count 2
+ip igmp snooping vlan 99 last-member-query-interval 1000
+vtp domain securitydemo
+vtp mode off
+!
+!
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-3260402944
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-3260402944
+ revocation-check none
+ rsakeypair TP-self-signed-3260402944
+!
+!
+crypto pki certificate chain TP-self-signed-3260402944
+dot1x system-auth-control
+!
+spanning-tree mode rapid-pvst
+spanning-tree portfast edge default
+spanning-tree extend system-id
+spanning-tree vlan 1,96-103,161-163,172,199-200,999,1610 priority 8192
+spanning-tree vlan 5,20,50,70,95,198,230-239 priority 12288
+!
+vlan internal allocation policy ascending
+!
+vlan 95
+ name NGDC
+!
+vlan 96
+ name Wireless
+!
+vlan 97
+ name Guest-WiFi
+!
+vlan 98
+ name Mgmt-Lab
+!
+vlan 99
+ name Storage
+!
+vlan 100
+ name ISE-LAB
+!
+vlan 101
+ name FirePower-Lab-Outside
+!
+vlan 102
+ name Firepower-Inside
+!
+vlan 103
+ name 10.1.103.0-INSIDE
+!
+vlan 161
+ name Virl-Flat-1
+!
+vlan 162
+ name VIRL-Flat-2
+!
+vlan 163
+ name VIRL-SNAT
+!
+vlan 200
+ name vMotion
+!
+vlan 230
+ name VLAN-230
+!
+vlan 231
+ name VLAN-231
+!
+vlan 232
+ name VLAN-232
+!
+vlan 233
+ name VLAN-233
+!
+vlan 234
+ name VLAN-234
+!
+vlan 235
+ name VLAN-235
+!
+vlan 236
+ name VLAN-236
+!
+vlan 237
+ name VLAN-237
+!
+vlan 238
+ name VLAN-238
+!
+vlan 239
+ name VLAN-239
+!
+vlan 999
+ name Native-VLAN
+!
+vlan 1610
+ name VIRL-INT-172.16.10.0
+!
+lldp run
+!
+!
+!
+macro name extractMacro
+end
+archive tar /xtract $SRCFILE $TARGETPATH 
+@
+!
+macro global description extractMacro
+!
+interface Bluetooth0
+ ip address 172.16.0.1 255.255.255.0
+ shutdown
+!
+interface Port-channel1
+ description Qnap-pc-1
+ switchport access vlan 99
+ switchport mode access
+ spanning-tree portfast edge
+!
+interface Port-channel2
+ description Port Channel to 3560cx
+ switchport trunk native vlan 999
+ switchport mode trunk
+ ip dhcp snooping trust
+!
+interface GigabitEthernet0/1
+ description ESXi-02-Mgmt
+ switchport access vlan 98
+ switchport mode trunk
+ no power efficient-ethernet
+ spanning-tree portfast edge
+!
+interface GigabitEthernet0/2
+ description ESXi Passthrough
+ switchport access vlan 100
+ switchport mode access
+ no power efficient-ethernet
+ mab
+ spanning-tree portfast edge
+!
+interface GigabitEthernet0/3
+ description Qnap-pc-1
+ switchport access vlan 99
+ switchport mode access
+ no power efficient-ethernet
+ spanning-tree portfast edge
+ channel-group 1 mode active
+!
+interface GigabitEthernet0/4
+ description Qnap-pc-1
+ switchport access vlan 99
+ switchport mode access
+ no power efficient-ethernet
+ spanning-tree portfast edge
+ channel-group 1 mode active
+!
+interface GigabitEthernet0/5
+ description Link to sw-2960G
+ switchport mode dynamic desirable
+ no power efficient-ethernet
+!
+interface GigabitEthernet0/6
+ description ESXi-2 OOB IPMI
+ switchport access vlan 98
+ switchport mode access
+ no power efficient-ethernet
+ spanning-tree portfast edge
+!
+interface GigabitEthernet0/7
+ description ESXi-02-VM-vmnic2
+ switchport trunk native vlan 999
+ switchport mode trunk
+ no power efficient-ethernet
+!
+interface GigabitEthernet0/8
+ description ESXi-02-VM-vmnic3
+ switchport trunk native vlan 999
+ switchport mode trunk
+ shutdown
+ no power efficient-ethernet
+ ip dhcp snooping trust
+!
+interface GigabitEthernet0/9
+ description ESXi-02-vmnic4-iSCSI
+ switchport trunk allowed vlan 99
+ switchport trunk native vlan 999
+ switchport mode trunk
+ no power efficient-ethernet
+!
+interface GigabitEthernet0/10
+ description ESXi-02-iSCSI-vmnic5
+ switchport trunk allowed vlan 99
+ switchport trunk native vlan 999
+ switchport mode trunk
+ no power efficient-ethernet
+!
+interface GigabitEthernet0/11
+ description Powerswitch
+ switchport access vlan 98
+ switchport trunk native vlan 999
+ switchport mode access
+ no power efficient-ethernet
+ spanning-tree portfast edge
+!
+interface GigabitEthernet0/12
+ description Meraki MR-24 AP
+ switchport trunk native vlan 999
+ switchport mode trunk
+ no power efficient-ethernet
+ spanning-tree portfast edge
+ ip dhcp snooping trust
+ ip dhcp snooping information option allow-untrusted
+!
+interface GigabitEthernet0/13
+ switchport trunk allowed vlan 99
+ switchport trunk native vlan 999
+ switchport mode access
+ no power efficient-ethernet
+ spanning-tree portfast edge
+!
+interface GigabitEthernet0/14
+ description AP-1852i
+ switchport access vlan 97
+ switchport trunk allowed vlan 1,95-103
+ switchport trunk native vlan 100
+ switchport mode trunk
+ no power efficient-ethernet
+ spanning-tree portfast edge
+ ip dhcp snooping trust
+ ip dhcp snooping information option allow-untrusted
+!
+interface GigabitEthernet0/15
+ description ESXi-01-vsb2-vm's
+ switchport trunk native vlan 999
+ switchport mode trunk
+ no power efficient-ethernet
+ speed 1000
+ duplex full
+!
+interface GigabitEthernet0/16
+ description ESXi-01-Mgmt-vsb1
+ switchport trunk allowed vlan 98,99
+ switchport trunk native vlan 999
+ switchport mode trunk
+ no power efficient-ethernet
+ spanning-tree portfast edge
+!
+interface GigabitEthernet0/17
+ description ESXi-01-NFS-vusb0
+ switchport access vlan 99
+ switchport trunk allowed vlan 98,99
+ switchport trunk native vlan 999
+ switchport mode trunk
+ no power efficient-ethernet
+!
+interface GigabitEthernet0/18
+ description ESXi-01-vusb3-vm's
+ switchport trunk native vlan 999
+ switchport mode trunk
+ no power efficient-ethernet
+!
+interface GigabitEthernet0/19
+ switchport access vlan 98
+ switchport trunk native vlan 999
+ switchport mode access
+ shutdown
+ no power efficient-ethernet
+ spanning-tree portfast edge
+ ip dhcp snooping trust
+!
+interface GigabitEthernet0/20
+ description Trunk to Meraki SW
+ switchport trunk native vlan 999
+ switchport mode trunk
+ shutdown
+ no power efficient-ethernet
+ spanning-tree portfast edge
+ ip dhcp snooping trust
+!
+interface GigabitEthernet0/21
+ description Cisco Phone 7940
+ switchport access vlan 98
+ switchport mode access
+ switchport voice vlan 97
+ shutdown
+ no power efficient-ethernet
+ authentication port-control auto
+ mab
+ dot1x pae authenticator
+ spanning-tree portfast edge
+ ip dhcp snooping trust
+!
+interface GigabitEthernet0/22
+ description Port Channel to 3560cx
+ switchport trunk native vlan 999
+ switchport mode trunk
+ channel-group 2 mode active
+ ip dhcp snooping trust
+!
+interface GigabitEthernet0/23
+ description Win10 Desktop VLAN 99
+ switchport access vlan 99
+ switchport trunk native vlan 999
+ switchport mode access
+ no power efficient-ethernet
+ spanning-tree portfast edge
+!
+interface GigabitEthernet0/24
+ description Test port to MacBook
+ switchport access vlan 98
+ switchport mode access
+ shutdown
+ no power efficient-ethernet
+ authentication port-control auto
+ dot1x pae authenticator
+ spanning-tree portfast edge
+ ip dhcp snooping trust
+!
+interface GigabitEthernet0/25
+ description Uplink to MX64 port 2
+ switchport trunk native vlan 999
+ switchport mode trunk
+ shutdown
+!
+interface GigabitEthernet0/26
+ switchport trunk native vlan 999
+ switchport mode trunk
+ shutdown
+!
+interface GigabitEthernet0/27
+ description Port Channel to 3560cx
+ switchport trunk native vlan 999
+ switchport mode trunk
+ channel-group 2 mode active
+ ip dhcp snooping trust
+!
+interface GigabitEthernet0/28
+ switchport trunk native vlan 999
+ switchport mode trunk
+!
+interface Vlan1
+ no ip address
+!
+interface Vlan95
+ description NGDC-Wireless 
+ ip dhcp relay information trusted
+ ip address 10.1.95.5 255.255.255.0
+ ip helper-address 10.10.95.3 
+ ipv6 address dhcp
+!
+interface Vlan96
+ description Wireless-VLAN-SVI 
+ ip address 10.1.96.5 255.255.255.0
+ ip helper-address 10.1.96.1 
+ ipv6 address dhcp
+!
+interface Vlan97
+ description Guest-WiFi 
+ ip dhcp relay information trusted
+ ip address 10.1.97.5 255.255.255.0
+ ip helper-address 10.1.97.254 
+ ipv6 address dhcp
+!
+interface Vlan98
+ description Mgmt 
+ ip dhcp relay information trusted
+ ip address 10.10.98.5 255.255.255.0
+!
+interface Vlan100
+ description Sec Demo 
+ ip dhcp relay information trusted
+ ip address 10.1.100.5 255.255.255.0
+ ip helper-address 10.1.100.3 
+!
+interface Vlan101
+ description Firepower-Inside-Temp-Gateway 
+ ip address 10.1.101.5 255.255.255.0
+ ip helper-address 10.1.101.3 
+!
+interface Vlan102
+ description FTD-DMZ-Temp-Gateway 
+ ip address 10.1.102.5 255.255.255.0
+ ip helper-address 10.10.98.3 
+!
+ip default-gateway 10.1.100.1
+ip http server
+ip http authentication local
+ip http secure-server
+ip route 0.0.0.0 0.0.0.0 10.10.98.1
+ip scp server enable
+!
+ip access-list extended Computer_Only
+ permit udp any eq domain any eq domain
+ permit tcp any eq domain any eq domain
+ permit udp any eq bootpc any eq bootps
+ permit ip any host 10.1.100.21
+ permit ip any host 10.1.100.40
+ deny   ip any any
+!
+!
+snmp-server community hammernet RO
+snmp-server location NGDC Lab 
+snmp-server contact Michael Hanna 
+snmp-server host 10.1.100.21 hammernet 
+snmp mib flash cache
+tacacs server TACACS
+ address ipv4 10.1.100.21
+ key ISEc0ld
+!
+!
+radius server Radius
+ address ipv4 10.1.100.21 auth-port 1645 acct-port 1646
+ key ISEc0ld
+!
+!
+line con 0
+ password c2960lsm
+line vty 0 4
+ privilege level 15
+line vty 5 15
+ privilege level 15
+!
+ntp server 10.1.100.40
+ntp server 10.10.98.1
+ntp server 10.10.98.3
+end

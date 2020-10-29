@@ -1,0 +1,9 @@
+---
+ansible_host: 10.10.98.5
+ansible_network_os: ios
+ansible_user: admin
+ansible_password: ISEc0ld
+ansible_become: no
+ansible_become_method: enable
+ansible_become_password: cisco
+...

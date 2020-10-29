@@ -1,0 +1,10 @@
+---
+ansible_host: 10.10.98.1
+ansible_user: mhanna
+ansible_ssh_pass: ISEc0ld
+ansible_connection: network_cli
+ansible_network_os: ios
+ansbile_become: no
+ansible_become_method: enable
+ansible_become_pass: cisco
+
