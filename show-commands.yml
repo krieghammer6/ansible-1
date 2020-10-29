@@ -1,6 +1,6 @@
 ---
   - name: capture show output
-    hosts: routers
+    hosts: switches
     gather_facts: no
     connection: network_cli
 
